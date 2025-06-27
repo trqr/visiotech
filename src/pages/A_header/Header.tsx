@@ -2,7 +2,8 @@ import {MenuItem } from "@mui/material";
 import { NavLink} from "react-router";
 import { useNavigate} from "react-router";
 import "./Header.css";
-
+import AuthContainer from "../../components/header/AuthContainer.tsx";
+import ResearchInput from "../../components/header/ResearchInput.tsx";
 
 const Header = () => {
     const navigate = useNavigate();
@@ -18,10 +19,14 @@ const Header = () => {
         {
             name: "Watched",
             navigation: "/watched"
+        },
+        {
+            name: "Best Movies",
+            navigation: "/bestmovies"
         }];
 
     return (
-        <>
+        <header style={{display:"flex", justifyContent:"space-between", alignItems:"center", height:"80px"}}>
             <nav style={{display:"flex", justifyContent:"center"}}>
                 {menu.map((item, index) =>
                     <>
@@ -32,7 +37,9 @@ const Header = () => {
                     </>
                 )}
             </nav>
-        </>
+            <ResearchInput></ResearchInput>
+            <AuthContainer></AuthContainer>
+        </header>
     );
 };
 

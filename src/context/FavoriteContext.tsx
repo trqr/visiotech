@@ -13,6 +13,10 @@ export const FavoriteContext = createContext<FavoriteProviderType | undefined>(u
 export const FavoriteProvider = ({children} : { children: React.ReactNode }) => {
     const [favoriteFilms, setFavoriteFilms] = useState<Movie[]>([]);
 
+/*    const getFavoriteFilms = () => {
+        loadFavoriteFromLocalStorage();
+    }*/
+
     const addFavorite = (movie: Movie) => {
         if (!isFavorite(movie)){
             setFavoriteFilms([...favoriteFilms, movie]);
@@ -34,7 +38,7 @@ export const FavoriteProvider = ({children} : { children: React.ReactNode }) => 
     }
 
     function loadFavoriteFromLocalStorage() {
-        const favoriteFilms = localStorage.getItem("favoriteFilms");4
+        const favoriteFilms = localStorage.getItem("favoriteFilms");
         if (favoriteFilms)
             setFavoriteFilms(JSON.parse(favoriteFilms));
     }
