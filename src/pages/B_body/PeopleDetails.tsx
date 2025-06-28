@@ -3,11 +3,12 @@ import {useEffect, useState} from "react";
 import {options, personApi} from "../../api/api.ts";
 import {Box, Paper, Typography} from "@mui/material";
 import {url} from "../../components/MovieItem.tsx";
+import type {PeopleDetails} from "../../@types/peopleDetails";
 
 const PeopleDetails = () => {
     const {id} = useParams();
     const navigate = useNavigate();
-    const [people, setPeople] = useState([]);
+    const [people, setPeople] = useState<PeopleDetails>({} as PeopleDetails);
     const [credits, setCredits] = useState([]);
 
     useEffect(() => {
@@ -24,23 +25,40 @@ const PeopleDetails = () => {
 
     return (
         <>
-            <Paper sx={{width: "75%", margin: "40px auto", display: "flex"}} elevation={3}>
-                <Box sx={{width: "300px", height: "400px", margin: "20px"}}>
-                    <img style={{objectFit:"fill", height: "400px"}} src={url+people.profile_path} alt={people.name}/>
+            <Paper sx={{width: "75%", margin: "40px auto", display: "flex", flexDirection:"column"}} elevation={3}>
+                <Box sx={{display:"flex", margin: "20px"}}>
+                    <img style={{objectFit:"fill",width: "350px"}} src={url+people.profile_path} alt={people.name}/>
+                    <Box sx={{display:"flex", flexDirection:"column", justifyContent:"center", margin: "20px"}}>
+                        <Typography variant={"h1"}>{people.name}</Typography>
+                        <Typography variant={"h5"}>Naissance: Le {people.birthday} à {people.place_of_birth}.</Typography>
+                        <Typography variant={"body1"} sx={{margin: "10px 0px",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 15,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden"}}>{people.biography}</Typography>
+                    </Box>
                 </Box>
-                <Box>
-                    <Typography variant={"h1"}>{people.name} {people.id}</Typography>
-                    <Typography variant={"h3"}>{people.birthday}</Typography>
-                    <Typography variant={"body1"}>{people.also_known_as}</Typography>
-                    <Typography variant={"body2"}>{people.biography}</Typography>
-                    <Box sx={{display:"grid", gridTemplateColumns: "repeat(3, 1fr)", gridGap: "10px", margin: "20px"}}>
+                <Typography variant={"h3"} sx={{textAlign:"center"}}>Filmographie</Typography>
+
+                <Box sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(6, 1fr)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignContent: "center",
+                    gridGap: "10px",
+                    margin: "20px"
+                }}>
                     {credits.map((credit: any) => (
-                        <Box sx={{cursor:"pointer"}} onClick={() => navigate(`/movie/${credit.id}`)}>
-                            <img style={{height:"150px"}} src={url+credit.poster_path}/>
-                            <Typography variant={"h4"}>{credit.title}</Typography>
+                        <Box sx={{transition: "all ease 0.3s",cursor: "pointer", margin: "5px",  "&:hover": { transform: "scale(1.05)"} }} onClick={() => navigate(`/movie/${credit.id}`)}>
+                            <img style={{display: "block", height: "250px", margin: "auto"}}
+                                 src={url + credit.poster_path}/>
+                            <Typography variant={"h6"} sx={{textAlign: "center", display: "-webkit-box",
+                                WebkitLineClamp: 1,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"}}>{credit.title}</Typography>
                         </Box>
                     ))}
-                    </Box>
                 </Box>
             </Paper>
 
