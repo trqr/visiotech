@@ -1,49 +1,42 @@
-import { useParams } from "react-router";
-import {Box, CircularProgress, Paper, Typography} from "@mui/material";
-import {useEffect, useState, useTransition} from "react";
+import {useParams} from "react-router";
+import {Box, Paper, Typography} from "@mui/material";
+import {useEffect, useState} from "react";
 import {url} from "../../components/MovieItem.tsx";
-import {fetching, movieApi, options} from "../../api/api.ts";
+import { options, serieApi} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 
 
-
-const MovieDetails = () => {
+const SerieDetails = () => {
     const {id} = useParams();
     const [movieData, setMovieData] = useState([]);
     const [images, setImages] = useState([]);
     const [credits, setCredits] = useState([]);
-    const [isPending, startTransition] = useTransition();
-
 
     useEffect(() => {
-        startTransition( () => {
-            fetch(`${movieApi}${id}?language=fr-FR`, options)
-                .then(res => res.json())
-                .then(data => setMovieData(data))
-                .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/images`, options)
-                .then(res => res.json())
-                .then(data => {
-                    setImages(data.backdrops);
-                })
-                .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/credits?language=fr-FR`, options)
-                .then(res => res.json())
-                .then(res => setCredits(res.cast))
-                .catch(err => console.error(err));
-        })
+        fetch(`${serieApi}${id}?language=fr-FR`, options)
+            .then(res => res.json())
+            .then(data => setMovieData(data))
+            .catch(err => console.error(err));
+
+        fetch(`${serieApi}${id}/images`, options)
+            .then(res => res.json())
+            .then(data => {
+                setImages(data.backdrops);
+                console.log(data);
+            })
+            .catch(err => console.error(err));
+
+        fetch(`${serieApi}${id}/credits?language=fr-FR`, options)
+            .then(res => res.json())
+            .then(res => setCredits(res.cast))
+            .catch(err => console.error(err));
     }, []);
 
     return (
         <>
             <Paper sx={{width: "90%", margin: "40px auto", display: "flex"}} elevation={3}>
-                {isPending && (
-                    <Box sx={{display: 'flex', justifyContent: "center"}}>
-                        <CircularProgress/>
-                    </Box>
-                )}
                 <Box sx={{width: "40%", margin: "20px 20px"}}>
-                <img style={{width:"100%"}} src={url+movieData.poster_path} alt={movieData.title}/>
+                    <img style={{width: "100%"}} src={url + movieData.poster_path} alt={movieData.title}/>
                     <h1>{movieData.title}</h1>
                     <Typography variant={"body2"}>Synopsis : {movieData.overview}</Typography>
                     <h2>Status: {movieData.status}</h2>
@@ -64,8 +57,15 @@ const MovieDetails = () => {
                         ))}
                     </Box>
                 </Box>
-                <div className={"grid"} style={{display:"grid", gridTemplateColumns: "repeat(3, 1fr)",
-                    gridTemplateRows: "gridAutoRows", gridGap: "10px", margin: "20px", justifyContent: "center", maxHeight: "500px"}}>
+                <div className={"grid"} style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gridTemplateRows: "gridAutoRows",
+                    gridGap: "10px",
+                    margin: "20px",
+                    justifyContent: "center",
+                    maxHeight: "500px"
+                }}>
                     {images.map((image: any) => (
                         <div>
                             <img style={{width: "300px"}} src={url + image.file_path} alt={movieData.title}></img>
@@ -77,4 +77,4 @@ const MovieDetails = () => {
     );
 };
 
-export default MovieDetails;
+export default SerieDetails;

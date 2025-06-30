@@ -10,6 +10,7 @@ import RegisterForm from "../components/auth/RegisterForm.tsx";
 import Error from "../pages/B_body/Error.tsx";
 import Research from "../pages/B_body/Research.tsx";
 import BestMovies from "../pages/B_body/BestMovies.tsx";
+import SerieDetails from "../pages/B_body/SerieDetails.tsx";
 
 const Router= () => {
     return (
@@ -21,6 +22,7 @@ const Router= () => {
                         <Route path="/watched" element={<SeenMovie/>}/>
                         <Route path="/bestmovies" element={<BestMovies/>}/>
                         <Route path="/movie/:id" element={<MovieDetails/>}/>
+                        <Route path="/tv/:id" element={<SerieDetails/>}/>
                         <Route path="/people/:id" element={<PeopleDetails/>}/>
                         <Route path="/register" element={<RegisterForm/>}/>
                         <Route path="/research/:search" element={<Research/>}/>
