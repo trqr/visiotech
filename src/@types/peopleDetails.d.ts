@@ -1,4 +1,4 @@
-export type PeopleDetails = {
+export type PeopleDetailsType = {
     "adult": false,
     "also_known_as": string[],
     "biography": string,

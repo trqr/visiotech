@@ -3,12 +3,12 @@ import {useEffect, useState} from "react";
 import {options, personApi} from "../../api/api.ts";
 import {Box, Paper, Typography} from "@mui/material";
 import {url} from "../../components/MovieItem.tsx";
-import type {PeopleDetails} from "../../@types/peopleDetails";
+import type {PeopleDetailsType} from "../../@types/peopleDetails";
 
 const PeopleDetails = () => {
     const {id} = useParams();
     const navigate = useNavigate();
-    const [people, setPeople] = useState<PeopleDetails>({} as PeopleDetails);
+    const [people, setPeople] = useState<PeopleDetailsType>({} as PeopleDetailsType);
     const [credits, setCredits] = useState([]);
 
     useEffect(() => {
