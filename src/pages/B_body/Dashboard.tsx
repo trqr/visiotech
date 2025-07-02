@@ -1,4 +1,14 @@
-import {Autocomplete, Box, Button, Chip, CircularProgress, Grid, IconButton, TextField} from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Chip,
+    CircularProgress,
+    Grid,
+    IconButton,
+    TextField,
+    useColorScheme
+} from "@mui/material";
 import MovieItem from "../../components/MovieItem.tsx";
 import Pages from "../Pages.tsx";
 import {useEffect, useState, useTransition} from "react";
@@ -23,6 +33,7 @@ const Dashboard= () => {
     const [selectedType, setSelectedType] = useState<string>("movie");
     const [ selectedGenreId, setSelectedGenreId] = useState<number>();
     const [isPending, startTransition] = useTransition();
+    const { mode } = useColorScheme();
 
 
     useEffect(() => {
@@ -92,7 +103,7 @@ const Dashboard= () => {
                             {(selectedType === "movie" ? movieGenres : tvGenres).genres.map(genre => (
                             <Chip
                                 key={genre.id}
-                                sx={{borderRadius:"10px", backgroundColor: selectedGenreId === genre.id ? "#d67e28" : "#121212"}}
+                                sx={{borderRadius:"10px", backgroundColor: selectedGenreId === genre.id ? "#d67e28" : (mode === "light" ? "#e8e8e8" : "#121212")}}
                                 variant={selectedGenreId === genre.id ? "filled" : "outlined"}
                                 color={selectedGenreId === genre.id ? "primary" : "default"}
                                 size={"medium"}
@@ -105,7 +116,7 @@ const Dashboard= () => {
                         </>
                     }
                 </Box>
-                <Grid container spacing={4}
+                <Grid id={"grid"} container spacing={4}
                       sx={{
                           justifyContent: "center",
                           alignItems: "stretch",

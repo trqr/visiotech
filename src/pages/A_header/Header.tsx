@@ -1,4 +1,4 @@
-import {MenuItem } from "@mui/material";
+import {MenuItem, useColorScheme} from "@mui/material";
 import { NavLink} from "react-router";
 import { useNavigate} from "react-router";
 import "./Header.css";
@@ -8,6 +8,7 @@ import ResearchAutocomplete from "../../components/header/ResearchAutocomplete.t
 
 const Header = () => {
     const navigate = useNavigate();
+    const { mode } = useColorScheme();
     const menu : { name: string, navigation: string}[] = [
         {
             name: "Accueil",
@@ -31,7 +32,7 @@ const Header = () => {
             <nav style={{display:"flex", justifyContent:"center", marginLeft:"10px"}}>
                 {menu.map((item, index) =>
                     <>
-                        <NavLink className={"navlink"} style={({isActive}) => ({border: isActive ? "1px solid #d67e28" : "none"})}
+                        <NavLink className={"navlink"} style={({isActive}) => ({border: isActive ? "1px solid #d67e28" : "none", color: mode === "light" ? "black" : "white"})}
                                  to={item.navigation}>
                             <MenuItem key={index}  onClick={()=> navigate(item.navigation)} sx={{cursor:"pointer"}}>{item.name}</MenuItem>
                         </NavLink>
