@@ -1,6 +1,6 @@
 import {type Dispatch, type SetStateAction, useEffect} from "react";
 
-export const options = {
+export const apiOptions = {
     method: 'GET',
     headers: {
         accept: 'application/json',
@@ -13,7 +13,7 @@ export const serieApi: string = "https://api.themoviedb.org/3/tv/";
 export const personApi: string = "https://api.themoviedb.org/3/person/";
 
 export async function fetching<T>(url: string, setter: Dispatch<SetStateAction<T[]>>){
-    fetch(url, options)
+    fetch(url, apiOptions)
         .then(res => res.json())
         .then(data => setter(prev => [...prev, ...data.results]))
         .catch(err => console.error(err));

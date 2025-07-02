@@ -1,6 +1,6 @@
 import {useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {options, personApi} from "../../api/api.ts";
+import {apiOptions, personApi} from "../../api/api.ts";
 import {Box, Paper, Typography} from "@mui/material";
 import {url} from "../../components/MovieItem.tsx";
 import type {PeopleDetailsType} from "../../@types/peopleDetails";
@@ -12,12 +12,12 @@ const PeopleDetails = () => {
     const [credits, setCredits] = useState([]);
 
     useEffect(() => {
-        fetch(`${personApi}${id}?language=fr-FR`, options)
+        fetch(`${personApi}${id}?language=fr-FR`, apiOptions)
             .then(res => res.json())
             .then(data => setPeople(data))
             .catch(err => console.error(err));
 
-        fetch(`${personApi}${id}/combined_credits?language=fr-FR`, options)
+        fetch(`${personApi}${id}/combined_credits?language=fr-FR`, apiOptions)
             .then(res => res.json())
             .then(res => setCredits(res.cast))
             .catch(err => console.error(err));

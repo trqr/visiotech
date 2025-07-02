@@ -43,3 +43,7 @@ export const Delete = async (entity: any, itemId: number) => {
         console.log(error)
     }
 };
+
+export const getUserByEmail = async (email: string) => {
+        return await db.users.where('email').equals(email).first();
+};

@@ -16,6 +16,8 @@
     "@mui/icons-material": "^7.1.2",
     "@mui/material": "^7.1.2",
     "@toolpad/core": "^0.16.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "dexie": "^4.0.11",
     "keen-slider": "^6.8.6",
     "react": "^19.1.0",

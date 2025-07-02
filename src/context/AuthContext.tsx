@@ -1,12 +1,14 @@
 import {createContext, useState, type ReactNode, type Dispatch, type SetStateAction} from "react";
 import LoginForm from "../components/auth/LoginForm";
-import {ThemeProvider} from "@mui/material";
-import themes from "../themes.tsx";
+import {Add, getUserByEmail} from "../db/indexedDb.service.tsx";
+import bcrypt from "bcryptjs";
+import type {User} from "../@types/User.ts";
 
 type AuthProviderType = {
     isLogged: boolean;
-    login: () => void;
+    login: (email: string, rawPassword: string) => void;
     logout: () => void;
+    register: (username: string, email: string, password: string) => void;
     setOpenLoginDialog: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -16,13 +18,34 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [isLogged, setIsLogged] = useState<boolean>(false);
     const [openLoginDialog, setOpenLoginDialog] = useState<boolean>(false);
 
-    const login = () => setIsLogged(true);
+    const login = async (email: string, rawPassword: string) => {
+        const user = await getUserByEmail(email)
+       if (!user) { return console.log("Wrong User or password") }
+
+       if (await bcrypt.compare(rawPassword, user.passwordHash)){
+           setIsLogged(true);
+           return console.log(`Welcome ${user.username} !`)
+       }
+        return console.log("Wrong User or password");
+    }
 
     const logout = () => setIsLogged(false);
 
+    const register = async (username: string, email: string, password: string) => {
+        const hash = await bcrypt.hash(password, 10);
+
+        const newUser: Omit<User, "id"> = {
+            username: username,
+            email: email,
+            passwordHash: hash,
+        };
+        const inserted = await Add("users", newUser);
+        console.log("Utilisateur ajouté :", inserted);
+    };
+
     return (
         <>
-            <AuthContext.Provider value={{isLogged, login, logout, setOpenLoginDialog}}>
+            <AuthContext.Provider value={{isLogged, login, logout, register, setOpenLoginDialog}}>
                 {children}
                     <LoginForm open={openLoginDialog} setOpen={setOpenLoginDialog}/>
             </AuthContext.Provider>

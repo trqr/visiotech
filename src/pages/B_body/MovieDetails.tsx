@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import {Box, CircularProgress, Paper, Typography} from "@mui/material";
 import {useEffect, useState, useTransition} from "react";
 import {url} from "../../components/MovieItem.tsx";
-import {fetching, movieApi, options} from "../../api/api.ts";
+import {fetching, movieApi, apiOptions} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 
 
@@ -17,17 +17,17 @@ const MovieDetails = () => {
 
     useEffect(() => {
         startTransition( () => {
-            fetch(`${movieApi}${id}?language=fr-FR`, options)
+            fetch(`${movieApi}${id}?language=fr-FR`, apiOptions)
                 .then(res => res.json())
                 .then(data => setMovieData(data))
                 .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/images`, options)
+            fetch(`${movieApi}${id}/images`, apiOptions)
                 .then(res => res.json())
                 .then(data => {
                     setImages(data.backdrops);
                 })
                 .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/credits?language=fr-FR`, options)
+            fetch(`${movieApi}${id}/credits?language=fr-FR`, apiOptions)
                 .then(res => res.json())
                 .then(res => setCredits(res.cast))
                 .catch(err => console.error(err));

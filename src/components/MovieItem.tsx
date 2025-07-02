@@ -30,7 +30,7 @@ const MovieItem= ({movie}: MovieItemProps) => {
     return (
         <>
             <Card
-                sx={{ position: "relative", maxWidth: 345 ,margin: "0 auto", justifyContent: "space-between", alignContent: "space-between"}}>
+                sx={{ position: "relative", display:"flex", flexDirection: "column", maxWidth: 345 ,minHeight: 750,margin: "0 auto", justifyContent: "space-between", alignContent: "space-between"}}>
                 <CardMedia
                     sx={{height: 500}}
                     image={url+movie.poster_path}

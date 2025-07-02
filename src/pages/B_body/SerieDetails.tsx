@@ -2,7 +2,7 @@ import {useParams} from "react-router";
 import {Box, Paper, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {url} from "../../components/MovieItem.tsx";
-import { options, serieApi} from "../../api/api.ts";
+import { apiOptions, serieApi} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 
 
@@ -13,12 +13,12 @@ const SerieDetails = () => {
     const [credits, setCredits] = useState([]);
 
     useEffect(() => {
-        fetch(`${serieApi}${id}?language=fr-FR`, options)
+        fetch(`${serieApi}${id}?language=fr-FR`, apiOptions)
             .then(res => res.json())
             .then(data => setMovieData(data))
             .catch(err => console.error(err));
 
-        fetch(`${serieApi}${id}/images`, options)
+        fetch(`${serieApi}${id}/images`, apiOptions)
             .then(res => res.json())
             .then(data => {
                 setImages(data.backdrops);
@@ -26,7 +26,7 @@ const SerieDetails = () => {
             })
             .catch(err => console.error(err));
 
-        fetch(`${serieApi}${id}/credits?language=fr-FR`, options)
+        fetch(`${serieApi}${id}/credits?language=fr-FR`, apiOptions)
             .then(res => res.json())
             .then(res => setCredits(res.cast))
             .catch(err => console.error(err));

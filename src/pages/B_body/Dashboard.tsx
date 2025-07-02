@@ -1,17 +1,21 @@
-import {Box, Button, Chip, CircularProgress, Grid} from "@mui/material";
+import {Autocomplete, Box, Button, Chip, CircularProgress, Grid, IconButton, TextField} from "@mui/material";
 import MovieItem from "../../components/MovieItem.tsx";
 import Pages from "../Pages.tsx";
 import {useEffect, useState, useTransition} from "react";
 import type {Movie} from "../../@types/movie";
-import { movieApi, options} from "../../api/api.ts";
+import { movieApi, apiOptions} from "../../api/api.ts";
 import PeopleItem from "../../components/PeopleItem.tsx";
 import type {People} from "../../@types/people";
 import Carousel from "../../components/common/Carousel.tsx";
 import movieGenres from "../../dataFake/movie_genres.json";
+import tvGenres from "../../dataFake/tv_genres.json";
+import { Clear } from "@mui/icons-material";
 
 const Dashboard= () => {
     const [movies, setMovies] = useState<Movie[]>();
+    const [noFilterMovies, setNoFilterMovies] = useState<Movie[]>();
     const [series, setSeries ] = useState<Movie[]>();
+    const [noFilterSeries, setNoFilterSeries] = useState<Movie[]>();
     const [actors, setActors] = useState<People[]>();
     const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>();
     const [upcomingSeries, setUpcomingSeries] = useState<Movie[]>();
@@ -23,13 +27,15 @@ const Dashboard= () => {
 
     useEffect(() => {
         startTransition( async () => {
-            const movies = await fetch(`${movieApi}/now_playing?language=fr-FR&page=${page}`, options)
+            const movies = await fetch(`${movieApi}/now_playing?language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
-            const series = await fetch(`https://api.themoviedb.org/3/tv/airing_today?language=fr-FR&page=${page}`, options)
+            const series = await fetch(`https://api.themoviedb.org/3/tv/airing_today?language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
-            const actors = await fetch(`https://api.themoviedb.org/3/person/popular?language=fr-FR&page=${page}`, options)
+            const actors = await fetch(`https://api.themoviedb.org/3/person/popular?language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
-                startTransition(() => {
+            startTransition(()  => {
+                    setNoFilterMovies(movies.results)
+                    setNoFilterSeries(series.results)
                     setMovies(movies.results);
                     setSeries(series.results);
                     setActors(actors.results);
@@ -40,9 +46,9 @@ const Dashboard= () => {
 
     useEffect(() => {
         startTransition( async () => {
-                const upcomingMovies = await fetch("https://api.themoviedb.org/3/movie/upcoming?language=fr-FR&page=1", options)
+                const upcomingMovies = await fetch("https://api.themoviedb.org/3/movie/upcoming?language=fr-FR&page=1", apiOptions)
                     .then(res => res.json())
-                const upcomingSeries = await fetch("https://api.themoviedb.org/3/tv/top_rated?language=fr-FR&page=1", options)
+                const upcomingSeries = await fetch("https://api.themoviedb.org/3/tv/top_rated?language=fr-FR&page=1", apiOptions)
                     .then(res => res.json())
             startTransition(() => {
                 setUpcomingSeries(upcomingSeries.results);
@@ -52,15 +58,20 @@ const Dashboard= () => {
     }, [selectedType]);
 
     useEffect(() => {
-        if (selectedGenreId){
-        startTransition( async () => {
-            const filteredMovies = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=fr-FR&page=1&sort_by=popularity.desc&with_genres=${selectedGenreId}`, options)
-                .then(res => res.json())
-            startTransition(() => {
-                setMovies(filteredMovies.results);
-            })
-        })
+        if (selectedGenreId) {
+
+            if (selectedType === "movie"){
+                fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=fr-FR&page=1&sort_by=popularity.desc&with_genres=${selectedGenreId}`, apiOptions)
+                    .then(res => res.json())
+                    .then(data => setMovies(data.results))
+            }
+            if (selectedType === "tv") {
+                fetch(`https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=fr-FR&page=1&sort_by=popularity.desc&with_genres=${selectedGenreId}`, apiOptions)
+                    .then(res => res.json())
+                    .then(data => setSeries(data.results))
+            }
         }
+
     }, [selectedGenreId]);
 
 
@@ -75,10 +86,24 @@ const Dashboard= () => {
                 {!isPending && selectedType !== "person" && upcomingMovies && (
                 <Carousel type={selectedType} movies={selectedType === "movie" ? upcomingMovies : upcomingSeries!}></Carousel>
                 )}
-                <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly"}}>
-                {movieGenres.genres.map(genre => (
-                    <Chip key={genre.id} variant={"outlined"} color={"primary"} size={"small"} label={genre.name} onClick={() => setSelectedGenreId(genre.id)}></Chip>
-                ))}
+                <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center", position: "sticky", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px"}}>
+                    {selectedType !== "person" &&
+                        <>
+                            {(selectedType === "movie" ? movieGenres : tvGenres).genres.map(genre => (
+                            <Chip
+                                key={genre.id}
+                                sx={{borderRadius:"10px", backgroundColor: selectedGenreId === genre.id ? "#d67e28" : "#121212"}}
+                                variant={selectedGenreId === genre.id ? "filled" : "outlined"}
+                                color={selectedGenreId === genre.id ? "primary" : "default"}
+                                size={"medium"}
+                                label={genre.name}
+                                onClick={() => setSelectedGenreId(genre.id)}></Chip>
+                            ))}
+                            <IconButton onClick={() => {setSelectedGenreId(0);setMovies(noFilterMovies);setSeries(noFilterSeries) }}>
+                                <Clear></Clear>
+                            </IconButton>
+                        </>
+                    }
                 </Box>
                 <Grid container spacing={4}
                       sx={{

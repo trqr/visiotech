@@ -3,7 +3,7 @@ import MovieItem from "../../components/MovieItem.tsx";
 import type {Movie} from "../../@types/movie";
 import {useParams} from "react-router";
 import {useEffect, useState, useTransition} from "react";
-import {options} from "../../api/api.ts";
+import {apiOptions} from "../../api/api.ts";
 import {Box, Button, CircularProgress, Grid} from "@mui/material";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 
@@ -17,12 +17,12 @@ const Research= () => {
 
     useEffect(() => {
         startTransition( () => {
-            fetch(`https://api.themoviedb.org/3/search/movie?query=${search}&include_adult=false&language=fr-FR&page=${page}`, options)
+            fetch(`https://api.themoviedb.org/3/search/movie?query=${search}&include_adult=false&language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
                 .then(data => setResearchedMovies(data.results))
                 .catch(err => console.error(err));
 
-            fetch(`https://api.themoviedb.org/3/search/person?query=${search}&include_adult=false&language=fr-FR&page=${page}`, options)
+            fetch(`https://api.themoviedb.org/3/search/person?query=${search}&include_adult=false&language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
                 .then(data => setResearchedActors(data.results))
                 .catch(err => console.error(err));
