@@ -5,55 +5,47 @@ import {useState} from "react"
 import type {Movie} from "../../@types/movie"
 import {url} from "../MovieItem.tsx"
 import {useNavigate} from "react-router";
-import {Typography, useTheme} from "@mui/material";
+import {Typography} from "@mui/material";
 
-type CarouselProps = {
-    movies: Movie[];
-    type: string;
+type VideosCarouselProps = {
+    videos: never[];
 }
 
-const Carousel = ({movies, type}: CarouselProps) => {
+const VideosCarousel = ({videos}: VideosCarouselProps) => {
     const navigate = useNavigate();
-    const theme = useTheme();
     const [currentSlide, setCurrentSlide] = useState(0)
     const [loaded, setLoaded] = useState(false)
     const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-        initial: 1,
-        slides: {
-            origin: "center",
-            perView: 2,
-            spacing: 15,
-        },
+        initial: 0,
         slideChanged(slider) {
             setCurrentSlide(slider.track.details.rel)
         },
-        created() {(setLoaded(true))},
+        created() {
+            setLoaded(true)
+        },
     })
 
     const slidesLength = instanceRef.current?.track?.details?.slides?.length ?? 1
 
     return (
         <>
-            <div className="navigation-wrapper">
-                <div ref={sliderRef} className="keen-slider">
-                    {movies.slice(0, 8).map((movie: Movie, index: number) => (
-                        <div key={movie.id} style={{cursor:"pointer" ,position:"relative"}} className={`keen-slider__slide number-slide${index}`} onClick={() => navigate(`/${type}/${movie.id}}`)}>
-                            <img src={url + movie.backdrop_path} alt={movie.title || "Movie"}/>
-                                <Typography fontSize={"large"} color={"textSecondary"} variant={"overline"}
-                                            sx={{
-                                                position: "absolute",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                bottom: "10px",
-                                                margin: "0px",
-                                                padding: "10px",
-                                                height: "30px",
-                                                borderRadius: "5px",
-                                                bgcolor: 'primary.main',
-                                                '&:hover': {
-                                                    bgcolor: 'primary.dark',
-                                    }}} >{type === "movie" ? movie.title : movie.name}</Typography>
-                        </div>
+            <div className="navigation-wrapper" style={{margin: "20px"}}>
+                <div ref={sliderRef} style={{width: "950px"}} className="keen-slider">
+                    {videos.slice(0,10).map((video, index: number) => (
+                        <>
+                            <div key={video.id} style={{cursor: "pointer", position: "relative"}}
+                                 className={`keen-slider__slide number-slide${index}`}>
+                                <iframe
+                                    width={"100%"}
+                                    height={"100%"}
+                                    src={`https://www.youtube.com/embed/${video.key}`}
+                                    title="YouTube video player"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen>
+                                </iframe>
+                            </div>
+                        </>
                     ))}
                 </div>
 
@@ -84,7 +76,6 @@ const Carousel = ({movies, type}: CarouselProps) => {
                             key={idx}
                             onClick={() => instanceRef.current?.moveToIdx(idx)}
                             className={"dot" + (currentSlide === idx ? " active" : "")}
-                            style={{background: (currentSlide === idx) ? `${theme.palette.primary.main}` : `#c5c5c5`}}
                         />
                     ))}
                 </div>
@@ -119,4 +110,4 @@ function Arrow({
     )
 }
 
-export default Carousel
+export default VideosCarousel

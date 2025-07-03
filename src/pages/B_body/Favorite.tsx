@@ -3,7 +3,7 @@ import {Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, 
 import type {Movie} from "../../@types/movie";
 import {url} from "../../components/MovieItem.tsx";
 import { useSeen } from "../../context/useSeen.tsx";
-import {Delete, Visibility, VisibilityOutlined} from "@mui/icons-material";
+import { Visibility, VisibilityOutlined} from "@mui/icons-material";
 import Pages from "../Pages.tsx";
 
 const Favorite = () => {

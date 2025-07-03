@@ -1,13 +1,13 @@
 import {
-    Autocomplete,
     Box,
     Button,
     Chip,
     CircularProgress,
     Grid,
     IconButton,
-    TextField,
-    useColorScheme
+    Skeleton, Stack,
+    useColorScheme,
+    useTheme
 } from "@mui/material";
 import MovieItem from "../../components/MovieItem.tsx";
 import Pages from "../Pages.tsx";
@@ -20,8 +20,12 @@ import Carousel from "../../components/common/Carousel.tsx";
 import movieGenres from "../../dataFake/movie_genres.json";
 import tvGenres from "../../dataFake/tv_genres.json";
 import { Clear } from "@mui/icons-material";
+import CarouselSkeleton from "../../components/common/Skeletons/CarouselSkeleton.tsx";
+import MainGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
+import DashboardGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
 
 const Dashboard= () => {
+    const theme = useTheme();
     const [movies, setMovies] = useState<Movie[]>();
     const [noFilterMovies, setNoFilterMovies] = useState<Movie[]>();
     const [series, setSeries ] = useState<Movie[]>();
@@ -89,7 +93,13 @@ const Dashboard= () => {
     return (
         <>
             <Pages title={"Dashboard"} description={"Dashboard"}>
-                <Box sx={{display: "flex", justifyContent: "center", margin: "20px 0"}}>
+                <Box sx={{display: "flex", justifyContent: "center", margin: "20px 0", maxWidth: "max-content",
+                    justifySelf: "center",
+                    borderBottomRightRadius: "10px",
+                    borderBottomLeftRadius: "10px",
+                    padding: "5px",
+                    backgroundColor: `${theme.palette.background.default}`,
+                }}>
                     <Button sx={{ margin: "0 5px"}} variant={selectedType === "movie" ? "contained" : "outlined"} onClick={() => setSelectedType("movie")}>Films</Button>
                     <Button sx={{margin: "0 5px"}} variant={ selectedType === "tv" ? "contained" : "outlined"} onClick={() => setSelectedType("tv")}>Series</Button>
                     <Button sx={{margin: "0 5px"}} variant={selectedType === "person" ? "contained" : "outlined"} onClick={() => setSelectedType("person")}>Actors</Button>
@@ -97,13 +107,17 @@ const Dashboard= () => {
                 {!isPending && selectedType !== "person" && upcomingMovies && (
                 <Carousel type={selectedType} movies={selectedType === "movie" ? upcomingMovies : upcomingSeries!}></Carousel>
                 )}
-                <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center", position: "sticky", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px"}}>
+                {isPending && (
+                    <CarouselSkeleton></CarouselSkeleton>
+                )}
+                <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center",
+                    position: "sticky", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px", backgroundColor: `${theme.palette.background.default}`}}>
                     {selectedType !== "person" &&
                         <>
                             {(selectedType === "movie" ? movieGenres : tvGenres).genres.map(genre => (
                             <Chip
                                 key={genre.id}
-                                sx={{borderRadius:"10px", backgroundColor: selectedGenreId === genre.id ? "#d67e28" : (mode === "light" ? "#e8e8e8" : "#121212")}}
+                                sx={{borderRadius:"10px", backgroundColor: selectedGenreId === genre.id ? `${theme.palette.primary.main}` : `${theme.palette.background.default}`}}
                                 variant={selectedGenreId === genre.id ? "filled" : "outlined"}
                                 color={selectedGenreId === genre.id ? "primary" : "default"}
                                 size={"medium"}
@@ -116,6 +130,9 @@ const Dashboard= () => {
                         </>
                     }
                 </Box>
+                {isPending &&
+                    <DashboardGridSkeleton></DashboardGridSkeleton>
+                }
                 <Grid id={"grid"} container spacing={4}
                       sx={{
                           justifyContent: "center",
@@ -147,11 +164,6 @@ const Dashboard= () => {
                             )}
                         </>}
                 </Grid>
-                {isPending && (
-                    <Box sx={{display: 'flex', justifyContent: "center"}}>
-                        <CircularProgress/>
-                    </Box>
-                    )}
                 <Button variant={"contained"} sx={{display:"block", margin: "20px auto"}} onClick={() => setPage(page + 1)}>Load more</Button>
             </Pages>
         </>

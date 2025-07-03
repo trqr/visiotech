@@ -2,8 +2,9 @@ import { useParams } from "react-router";
 import {Box, CircularProgress, Paper, Typography} from "@mui/material";
 import {useEffect, useState, useTransition} from "react";
 import {url} from "../../components/MovieItem.tsx";
-import {fetching, movieApi, apiOptions} from "../../api/api.ts";
+import { movieApi, apiOptions} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
+import VideosCarousel from "../../components/common/VideosCarousel.tsx";
 
 
 
@@ -12,25 +13,26 @@ const MovieDetails = () => {
     const [movieData, setMovieData] = useState([]);
     const [images, setImages] = useState([]);
     const [credits, setCredits] = useState([]);
+    const [videos, setVideos] = useState([]);
     const [isPending, startTransition] = useTransition();
 
 
     useEffect(() => {
-        startTransition( () => {
-            fetch(`${movieApi}${id}?language=fr-FR`, apiOptions)
+        startTransition( async () => {
+            const movieData = await fetch(`${movieApi}${id}?language=fr-FR`, apiOptions)
                 .then(res => res.json())
-                .then(data => setMovieData(data))
-                .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/images`, apiOptions)
-                .then(res => res.json())
-                .then(data => {
-                    setImages(data.backdrops);
-                })
-                .catch(err => console.error(err));
-            fetch(`${movieApi}${id}/credits?language=fr-FR`, apiOptions)
-                .then(res => res.json())
-                .then(res => setCredits(res.cast))
-                .catch(err => console.error(err));
+            const movieImages = await fetch(`${movieApi}${id}/images`, apiOptions)
+                .then(res => res.json());
+            const movieCredits = await fetch(`${movieApi}${id}/credits?language=fr-FR`, apiOptions)
+                .then(res => res.json());
+            const movieVideos = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`, apiOptions)
+                .then(res => res.json());
+            startTransition( () => {
+                setMovieData(movieData);
+                setImages(movieImages.backdrops);
+                setCredits(movieCredits.cast);
+                setVideos(movieVideos.results);
+            })
         })
     }, []);
 
@@ -64,14 +66,26 @@ const MovieDetails = () => {
                         ))}
                     </Box>
                 </Box>
-                <div className={"grid"} style={{display:"grid", gridTemplateColumns: "repeat(3, 1fr)",
-                    gridTemplateRows: "gridAutoRows", gridGap: "10px", margin: "20px", justifyContent: "center", maxHeight: "500px"}}>
-                    {images.map((image: any) => (
-                        <div>
-                            <img style={{width: "300px"}} src={url + image.file_path} alt={movieData.title}></img>
-                        </div>
-                    ))}
-                </div>
+                <Box sx={{display: "flex", flexDirection: "column"}}>
+                    {!isPending &&
+                        <VideosCarousel videos={videos}></VideosCarousel>
+                    }
+                    <div className={"grid"} style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gridTemplateRows: "gridAutoRows",
+                        gridGap: "10px",
+                        margin: "20px",
+                        justifyContent: "center",
+                        maxHeight: "500px"
+                    }}>
+                        {images.map((image: any) => (
+                            <div>
+                                <img style={{width: "300px"}} src={url + image.file_path} alt={movieData.title}></img>
+                            </div>
+                        ))}
+                    </div>
+                </Box>
             </Paper>
         </>
     );

@@ -1,7 +1,5 @@
 import {Box, Button, Dialog, TextField} from "@mui/material";
 import {useAuth} from "../../context/useAuth.tsx";
-import { useSeen } from "../../context/useSeen.tsx";
-import { useFav } from "../../context/useFav.tsx";
 import { useState } from "react";
 
 type LoginFormProps = {

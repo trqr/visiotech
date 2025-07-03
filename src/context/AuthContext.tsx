@@ -32,6 +32,9 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const logout = () => setIsLogged(false);
 
     const register = async (username: string, email: string, password: string) => {
+        if (await getUserByEmail(email)) {
+            return console.log("Email already used");
+        }
         const hash = await bcrypt.hash(password, 10);
 
         const newUser: Omit<User, "id"> = {
