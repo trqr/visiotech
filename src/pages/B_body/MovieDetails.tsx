@@ -52,15 +52,26 @@ const MovieDetails = () => {
                         ? <Skeleton variant={"rectangular"} width={"100%"} height={"1200px"} sx={{alignSelf: "flex-start"}}></Skeleton>
                         : <img style={{width: "100%"}} src={url + movieData.poster_path} alt={movieData.title}/>
                     }
-                    <Typography variant={"h1"}>{isPending ? <Skeleton/> : `${movieData.title}`}</Typography>
+                    <Typography variant={"h3"}>{isPending ? <Skeleton/> : `${movieData.title}`}</Typography>
                     <Typography variant={"body2"} sx={{textAlign: "justify"}}>
                         {isPending
                             ? <><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton width={"70%"}/></>
                             : `Synopsis : ${movieData.overview}`}
                     </Typography>
-                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.status}`}</Typography>
-                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.budget}`}</Typography>
-                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.revenue}`}</Typography>
+                    <Box sx={{display: "flex", justifyContent: "space-between", margin: "20px 20px", alignItems:"center"}}>
+                        <Box>
+                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.status}`}</Typography>
+                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Budget: ${movieData.budget}`}</Typography>
+                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Revenus: ${movieData.revenue}`}</Typography>
+                        </Box>
+                        <Box sx={{display: "flex", width: "50%", justifyContent: "space-around", alignItems: "center", alignContent: "center", flexWrap: "wrap"}}>
+                            {movieData.production_companies && movieData.production_companies.map((production) => (
+                                <Box key={production.id} style={{display:"flex", maxWidth: "120px", justifyContent:"center", maxHeight: "90px", margin: "5px"}}>
+                                    <img style={{ objectFit:"contain"}} src={url+production.logo_path} alt={production.name}></img>
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>
                     <Box sx={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", flexWrap: "wrap", margin: "10px"}}>
                         {providers.map((provider, index) => (
                             <Box key={index} sx={{display:"flex",flexDirection: "column", alignItems:"center", justifyContent:"center", margin: "10px"}}>
