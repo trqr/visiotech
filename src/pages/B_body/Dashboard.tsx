@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import MovieItem from "../../components/MovieItem.tsx";
 import Pages from "../Pages.tsx";
-import {useEffect, useState, useTransition} from "react";
+import {useEffect, useRef, useState, useTransition} from "react";
 import type {Movie} from "../../@types/movie";
 import { movieApi, apiOptions} from "../../api/api.ts";
 import PeopleItem from "../../components/PeopleItem.tsx";
@@ -23,9 +23,12 @@ import { Clear } from "@mui/icons-material";
 import CarouselSkeleton from "../../components/common/Skeletons/CarouselSkeleton.tsx";
 import MainGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
 import DashboardGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
+import {useAuth} from "../../context/useAuth.tsx";
+import {useFav} from "../../context/useFav.tsx";
 
 const Dashboard= () => {
     const theme = useTheme();
+    const gridRef = useRef<HTMLDivElement>(null)
     const [movies, setMovies] = useState<Movie[]>();
     const [noFilterMovies, setNoFilterMovies] = useState<Movie[]>();
     const [series, setSeries ] = useState<Movie[]>();
@@ -37,10 +40,13 @@ const Dashboard= () => {
     const [selectedType, setSelectedType] = useState<string>("movie");
     const [ selectedGenreId, setSelectedGenreId] = useState<number>();
     const [isPending, startTransition] = useTransition();
-    const { mode } = useColorScheme();
+    const {isLogged, user} = useAuth();
+    const {getFavorites} = useFav();
 
 
     useEffect(() => {
+        if (isLogged)
+            getFavorites(user);
         startTransition( async () => {
             const movies = await fetch(`${movieApi}/now_playing?language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
@@ -57,7 +63,7 @@ const Dashboard= () => {
                 })
             }
         )
-    }, [page])
+    }, [page, isLogged])
 
     useEffect(() => {
         startTransition( async () => {
@@ -108,10 +114,10 @@ const Dashboard= () => {
                 <Carousel type={selectedType} movies={selectedType === "movie" ? upcomingMovies : upcomingSeries!}></Carousel>
                 )}
                 {isPending && (
-                    <CarouselSkeleton></CarouselSkeleton>
+                    <CarouselSkeleton gap={"5px"} width={"100%"}></CarouselSkeleton>
                 )}
                 <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center",
-                    position: "sticky", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px", backgroundColor: `${theme.palette.background.default}`}}>
+                    position: "sticky", href:"#grid", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px", backgroundColor: `${theme.palette.background.default}`}}>
                     {selectedType !== "person" &&
                         <>
                             {(selectedType === "movie" ? movieGenres : tvGenres).genres.map(genre => (
@@ -122,7 +128,10 @@ const Dashboard= () => {
                                 color={selectedGenreId === genre.id ? "primary" : "default"}
                                 size={"medium"}
                                 label={genre.name}
-                                onClick={() => setSelectedGenreId(genre.id)}></Chip>
+                                onClick={() => {
+                                    setSelectedGenreId(genre.id);
+                                    gridRef.current?.scrollIntoView({behavior: "smooth"})
+                                }}></Chip>
                             ))}
                             <IconButton onClick={() => {setSelectedGenreId(0);setMovies(noFilterMovies);setSeries(noFilterSeries) }}>
                                 <Clear></Clear>
@@ -133,7 +142,7 @@ const Dashboard= () => {
                 {isPending &&
                     <DashboardGridSkeleton></DashboardGridSkeleton>
                 }
-                <Grid id={"grid"} container spacing={4}
+                <Grid id={"grid"} ref={gridRef} container spacing={4}
                       sx={{
                           justifyContent: "center",
                           alignItems: "stretch",
@@ -143,7 +152,7 @@ const Dashboard= () => {
                         <>
                             {movies && movies.map(movie =>
                                 <Grid key={movie.id} size={{xs: 12, md: 4, lg: 3, xl: 2.2}}>
-                                    <MovieItem  movie={movie}></MovieItem>
+                                    <MovieItem  movie={movie} selectedType={selectedType}></MovieItem>
                                 </Grid>
                             )}
                         </>}
@@ -151,7 +160,7 @@ const Dashboard= () => {
                         <>
                             {series && series.map(serie =>
                                 <Grid key={serie.id} size={{xs: 12, md: 4, lg: 3, xl: 2.2}}>
-                                    <MovieItem  movie={serie}></MovieItem>
+                                    <MovieItem  movie={serie} selectedType={selectedType}></MovieItem>
                                 </Grid>
                             )}
                         </>}

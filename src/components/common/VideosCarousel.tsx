@@ -2,17 +2,14 @@ import {useKeenSlider} from "keen-slider/react"
 import "keen-slider/keen-slider.min.css"
 import './Carousel.css'
 import {useState} from "react"
-import type {Movie} from "../../@types/movie"
-import {url} from "../MovieItem.tsx"
-import {useNavigate} from "react-router";
-import {Typography} from "@mui/material";
+import { useTheme} from "@mui/material";
 
 type VideosCarouselProps = {
     videos: never[];
 }
 
 const VideosCarousel = ({videos}: VideosCarouselProps) => {
-    const navigate = useNavigate();
+    const theme = useTheme();
     const [currentSlide, setCurrentSlide] = useState(0)
     const [loaded, setLoaded] = useState(false)
     const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
@@ -60,6 +57,7 @@ const VideosCarousel = ({videos}: VideosCarouselProps) => {
                         />
 
                         <Arrow
+
                             onClick={(e) =>
                                 e.stopPropagation() || instanceRef.current?.next()
                             }
@@ -76,6 +74,7 @@ const VideosCarousel = ({videos}: VideosCarouselProps) => {
                             key={idx}
                             onClick={() => instanceRef.current?.moveToIdx(idx)}
                             className={"dot" + (currentSlide === idx ? " active" : "")}
+                            style={{background: (currentSlide === idx) ? `${theme.palette.primary.main}` : `#c5c5c5`}}
                         />
                     ))}
                 </div>
@@ -96,6 +95,7 @@ function Arrow({
     const disabledClass = disabled ? " arrow--disabled" : ""
     return (
         <svg
+            style={{fill: useTheme().palette.primary.main}}
             onClick={onClick}
             className={`arrow ${left ? "arrow--left" : "arrow--right"}${disabledClass}`}
             xmlns="http://www.w3.org/2000/svg"

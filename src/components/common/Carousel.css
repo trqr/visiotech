@@ -47,7 +47,6 @@ img {
     top: 50%;
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
-    fill: #d67e28;
     cursor: pointer;
 }
 

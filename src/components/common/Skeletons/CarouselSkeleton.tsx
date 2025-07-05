@@ -1,14 +1,19 @@
 import {Skeleton, Stack} from "@mui/material";
 
-const CarouselSkeleton = () => {
+type CarouselSkeletonProps = {
+    gap: string;
+    width: string;
+}
+
+const CarouselSkeleton = ({gap, width}: CarouselSkeletonProps) => {
     return (
         <>
-            <Stack gap={"5px"}
+            <Stack gap={gap}
                    sx={{alignItems: "center", justifyContent: "center", display: "flex", marginBottom: "35px"}}>
                 <Skeleton
                     animation="wave"
                     variant="rectangular"
-                    width={"100%"}
+                    width={width}
                     height={"500px"}
                 />
                 <Skeleton animation="wave"

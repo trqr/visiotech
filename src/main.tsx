@@ -14,12 +14,12 @@ createRoot(document.getElementById('root')!).render(
         <ThemeProvider theme={theme}>
             <BrowserRouter>
                 <AuthProvider>
-                    <SeenProvider>
-                        <FavoriteProvider>
-                            <App/>
-                            <CssBaseline/>
-                        </FavoriteProvider>
-                    </SeenProvider>
+                    <FavoriteProvider>
+                        <SeenProvider>
+                                <App/>
+                                <CssBaseline/>
+                        </SeenProvider>
+                    </FavoriteProvider>
                 </AuthProvider>
             </BrowserRouter>
         </ThemeProvider>

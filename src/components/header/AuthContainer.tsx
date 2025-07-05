@@ -3,11 +3,18 @@ import {Box, Button} from "@mui/material";
 import {useState} from "react";
 import RegisterForm from "../auth/RegisterForm.tsx";
 import ThemeSwitch from "./ThemeSwitch.tsx";
+import {useFav} from "../../context/useFav.tsx";
 
 
 const AuthContainer = () => {
     const { logout, isLogged, setOpenLoginDialog } = useAuth();
+    const { clearFavorites } = useFav()
     const [open, setOpen] = useState(false);
+
+    const handleLogout = () => {
+        logout()
+        clearFavorites();
+    }
 
     return (
         <>
@@ -16,7 +23,7 @@ const AuthContainer = () => {
                     ?
                     <>
                         <ThemeSwitch></ThemeSwitch>
-                        <Button variant={"outlined"} onClick={() => logout()}>Logout</Button>
+                        <Button variant={"outlined"} onClick={() => handleLogout()}>Logout</Button>
                     </>
                     :
                     <>

@@ -1,10 +1,11 @@
 import { useParams } from "react-router";
-import {Box, CircularProgress, Paper, Typography} from "@mui/material";
+import {Box, CircularProgress, Paper, Skeleton, Typography} from "@mui/material";
 import {useEffect, useState, useTransition} from "react";
 import {url} from "../../components/MovieItem.tsx";
 import { movieApi, apiOptions} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 import VideosCarousel from "../../components/common/VideosCarousel.tsx";
+import CarouselSkeleton from "../../components/common/Skeletons/CarouselSkeleton.tsx";
 
 
 
@@ -14,6 +15,7 @@ const MovieDetails = () => {
     const [images, setImages] = useState([]);
     const [credits, setCredits] = useState([]);
     const [videos, setVideos] = useState([]);
+    const [providers, setProviders] = useState([]);
     const [isPending, startTransition] = useTransition();
 
 
@@ -27,30 +29,45 @@ const MovieDetails = () => {
                 .then(res => res.json());
             const movieVideos = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`, apiOptions)
                 .then(res => res.json());
+            const movieProviders = await fetch('https://api.themoviedb.org/3/movie/76600/watch/providers', apiOptions)
+                .then(res => res.json());
             startTransition( () => {
                 setMovieData(movieData);
                 setImages(movieImages.backdrops);
                 setCredits(movieCredits.cast);
-                setVideos(movieVideos.results);
+                setVideos(movieVideos.results.filter(video => video.type === "Trailer" || video.type === "Behind the Scenes").sort((a, b) => {
+                    if (a.type === b.type) return 0;
+                    return a.type === "Trailer" ? -1 : 1;
+                }));
+                setProviders(movieProviders.results.FR.rent);
             })
         })
-    }, []);
+    }, [id]);
 
     return (
         <>
-            <Paper sx={{width: "90%", margin: "40px auto", display: "flex"}} elevation={3}>
-                {isPending && (
-                    <Box sx={{display: 'flex', justifyContent: "center"}}>
-                        <CircularProgress/>
+            <Paper sx={{width: "90%", margin: "40px auto", display: "flex", justifyContent: "flex-start", alignContent: "flex-start"}} elevation={3}>
+                <Box sx={{width: "40%", margin: "20px 20px", position: "relative", justifyContent:"flex-start"}}>
+                    {isPending
+                        ? <Skeleton variant={"rectangular"} width={"100%"} height={"1200px"} sx={{alignSelf: "flex-start"}}></Skeleton>
+                        : <img style={{width: "100%"}} src={url + movieData.poster_path} alt={movieData.title}/>
+                    }
+                    <Typography variant={"h1"}>{isPending ? <Skeleton/> : `${movieData.title}`}</Typography>
+                    <Typography variant={"body2"} sx={{textAlign: "justify"}}>
+                        {isPending
+                            ? <><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton width={"70%"}/></>
+                            : `Synopsis : ${movieData.overview}`}
+                    </Typography>
+                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.status}`}</Typography>
+                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.budget}`}</Typography>
+                    <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.revenue}`}</Typography>
+                    <Box sx={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", flexWrap: "wrap", margin: "10px"}}>
+                        {providers.map((provider, index) => (
+                            <Box key={index} sx={{display:"flex",flexDirection: "column", alignItems:"center", justifyContent:"center", margin: "10px"}}>
+                                <img style={{width: "50px"}} src={url+provider.logo_path}/>
+                            </Box>
+                        ))}
                     </Box>
-                )}
-                <Box sx={{width: "40%", margin: "20px 20px"}}>
-                <img style={{width:"100%"}} src={url+movieData.poster_path} alt={movieData.title}/>
-                    <h1>{movieData.title}</h1>
-                    <Typography variant={"body2"}>Synopsis : {movieData.overview}</Typography>
-                    <h2>Status: {movieData.status}</h2>
-                    <h2>Budget: {movieData.budget}</h2>
-                    <h2>Revenue: {movieData.revenue}</h2>
                     <Box sx={{
                         display: "grid",
                         gridTemplateColumns: "repeat(3, 1fr)",
@@ -67,8 +84,9 @@ const MovieDetails = () => {
                     </Box>
                 </Box>
                 <Box sx={{display: "flex", flexDirection: "column"}}>
-                    {!isPending &&
-                        <VideosCarousel videos={videos}></VideosCarousel>
+                    {isPending
+                        ? <CarouselSkeleton gap={"40px"} width={"950px"}></CarouselSkeleton>
+                        : <VideosCarousel videos={videos}></VideosCarousel>
                     }
                     <div className={"grid"} style={{
                         display: "grid",
@@ -79,11 +97,20 @@ const MovieDetails = () => {
                         justifyContent: "center",
                         maxHeight: "500px"
                     }}>
-                        {images.map((image: any) => (
-                            <div>
-                                <img style={{width: "300px"}} src={url + image.file_path} alt={movieData.title}></img>
-                            </div>
-                        ))}
+                        {isPending ?
+                            Array.from({length: 21}).map((_, i) => (
+                                <div>
+                                    <Skeleton key={i} variant={"rectangular"} width={300} height={168.75}/>
+                                </div>
+                            ))
+                            :
+                            images.map((image: any) => (
+                                <div>
+                                    <img style={{width: "300px"}} src={url + image.file_path}
+                                         alt={movieData.title}></img>
+                                </div>
+                            ))
+                        }
                     </div>
                 </Box>
             </Paper>

@@ -105,6 +105,7 @@ function Arrow({
     const disabledClass = disabled ? " arrow--disabled" : ""
     return (
         <svg
+            style={{fill: useTheme().palette.primary.main}}
             onClick={onClick}
             className={`arrow ${left ? "arrow--left" : "arrow--right"}${disabledClass}`}
             xmlns="http://www.w3.org/2000/svg"

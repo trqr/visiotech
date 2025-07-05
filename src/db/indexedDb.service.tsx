@@ -47,3 +47,7 @@ export const Delete = async (entity: any, itemId: number) => {
 export const getUserByEmail = async (email: string) => {
         return await db.users.where('email').equals(email).first();
 };
+
+export const getFavByUserId = async (userId: number) => {
+    return await db.fav.where('user_id').equals(userId).toArray();
+}

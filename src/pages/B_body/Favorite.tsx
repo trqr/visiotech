@@ -1,52 +1,65 @@
 import {useFav} from "../../context/useFav.tsx";
-import {Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, Rating, Typography} from "@mui/material";
 import type {Movie} from "../../@types/movie";
 import {url} from "../../components/MovieItem.tsx";
 import { useSeen } from "../../context/useSeen.tsx";
-import { Visibility, VisibilityOutlined} from "@mui/icons-material";
+import {Delete, EmojiEvents, EmojiEventsOutlined, Visibility, VisibilityOutlined} from "@mui/icons-material";
 import Pages from "../Pages.tsx";
+import type {Fav} from "../../@types/Fav.ts";
 
 const Favorite = () => {
-    // @ts-ignore
+    // @ts-expect-error biendslecontext
     const { favoriteFilms, addFavorite, removeFavorite, isFavorite } = useFav();
-    // @ts-ignore
+    // @ts-expect-error biendslecontext
     const { seenFilms, addSeen, removeSeen, isSeen } = useSeen();
 
     return (
         <>
             <Pages title={"Favoris"} description={"Mes favoris"}>
-                <h1 style={{textAlign: "center"}}>Mes favoris</h1>
-                <Container maxWidth="md">
+                <h1 style={{textAlign: "center"}}>{favoriteFilms.length > 0 ? "Mes favoris" : "Vous n'avez pas de favoris"}</h1>
+                <Container maxWidth="lg">
                     <Grid container spacing={2}>
-                    {favoriteFilms.map((movie: Movie) => (
+                    {favoriteFilms.map((fav: Fav) => (
                         <Grid size={{xl: 6, lg: 6, md: 6, xs: 12}}>
-                            <Card sx={{display: 'flex'}}>
+                            <Card sx={{display: 'flex', minHeight: "180px", justifyContent: 'space-between'}}>
                                 <Box sx={{display: 'flex', flexDirection: 'column'}}>
                                     <CardContent sx={{flex: '1 0 auto', width: "250px"}}>
                                         <Typography component="div" variant="h5">
-                                            {movie.title}
+                                            {fav.title}
                                         </Typography>
-                                        <Typography
-                                            variant="subtitle1"
-                                            component="div"
-                                            sx={{color: 'text.secondary'}}
-                                        >
-                                            Mac Miller
-                                        </Typography>
+                                        <Typography variant={"caption"}>{fav.type === "movie" ? 'Film' : 'Serie'}</Typography>
                                     </CardContent>
-                                    <Box sx={{display: 'flex', alignItems: 'center', pl: 1, pb: 1}}>
+                                    <Box sx={{display: 'flex', justifyContent: "space-between",  alignContent: 'center', pl: 1, pb: 1}}>
+                                        <Box>
                                         <IconButton color={"primary"}
-                                                    onClick={() => isSeen(movie) ? removeSeen(movie) : addSeen(movie)}>
-                                            {isSeen(movie) ? <Visibility/> : <VisibilityOutlined/>}
+                                                    onClick={() => isSeen(fav) ? removeSeen(fav) : addSeen(fav)}>
+                                            {isSeen(fav) ? <Visibility/> : <VisibilityOutlined/>}
                                         </IconButton>
-                                        <Button variant={"text"} onClick={() => removeFavorite(movie)}>Remove</Button>
+                                        <IconButton onClick={() => removeFavorite(fav.id)}><Delete color={"primary"}/></IconButton>
+                                        </Box>
+                                        <Box sx={{
+                                            display: "flex",
+                                            flexDirection: 'column',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'flex-end'
+                                        }}>
+                                            <Typography sx={{textAlign: "right"}} fontSize={"x-small"}
+                                                        component="legend">({fav.vote_number})</Typography>
+                                            <Rating name="size-small"
+                                                    size="small"
+                                                    defaultValue={fav.vote_average / 2}
+                                                    precision={0.1}
+                                                    icon={<EmojiEvents/>}
+                                                    emptyIcon={<EmojiEventsOutlined/>}
+                                                    readOnly/>
+                                        </Box>
                                     </Box>
                                 </Box>
                                 <CardMedia
                                     component="img"
-                                    sx={{width: 151}}
-                                    image={url+movie.poster_path}
-                                    alt={movie.title}
+                                    sx={{width: 300}}
+                                    image={fav.image}
+                                    alt={fav.title}
                                 />
                             </Card>
                         </Grid>

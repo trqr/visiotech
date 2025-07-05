@@ -3,9 +3,11 @@ import LoginForm from "../components/auth/LoginForm";
 import {Add, getUserByEmail} from "../db/indexedDb.service.tsx";
 import bcrypt from "bcryptjs";
 import type {User} from "../@types/User.ts";
+import {useFav} from "./useFav.tsx";
 
 type AuthProviderType = {
     isLogged: boolean;
+    user: User | null;
     login: (email: string, rawPassword: string) => void;
     logout: () => void;
     register: (username: string, email: string, password: string) => void;
@@ -17,6 +19,7 @@ export const AuthContext = createContext<AuthProviderType | undefined>(undefined
 export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [isLogged, setIsLogged] = useState<boolean>(false);
     const [openLoginDialog, setOpenLoginDialog] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
 
     const login = async (email: string, rawPassword: string) => {
         const user = await getUserByEmail(email)
@@ -24,12 +27,16 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
        if (await bcrypt.compare(rawPassword, user.passwordHash)){
            setIsLogged(true);
+           setUser(user)
            return console.log(`Welcome ${user.username} !`)
        }
         return console.log("Wrong User or password");
     }
 
-    const logout = () => setIsLogged(false);
+    const logout = () => {
+        setUser(null);
+        setIsLogged(false);
+    }
 
     const register = async (username: string, email: string, password: string) => {
         if (await getUserByEmail(email)) {
@@ -48,7 +55,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
     return (
         <>
-            <AuthContext.Provider value={{isLogged, login, logout, register, setOpenLoginDialog}}>
+            <AuthContext.Provider value={{isLogged, user, login, logout, register, setOpenLoginDialog}}>
                 {children}
                     <LoginForm open={openLoginDialog} setOpen={setOpenLoginDialog}/>
             </AuthContext.Provider>
