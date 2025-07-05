@@ -52,7 +52,7 @@ const MovieDetails = () => {
                         ? <Skeleton variant={"rectangular"} width={"100%"} height={"1200px"} sx={{alignSelf: "flex-start"}}></Skeleton>
                         : <img style={{width: "100%"}} src={url + movieData.poster_path} alt={movieData.title}/>
                     }
-                    <Typography variant={"h3"}>{isPending ? <Skeleton/> : `${movieData.title}`}</Typography>
+                    <Typography variant={"h3"} sx={{margin: "10px 0"}}>{isPending ? <Skeleton/> : `${movieData.title}`}</Typography>
                     <Typography variant={"body2"} sx={{textAlign: "justify"}}>
                         {isPending
                             ? <><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton/><Skeleton width={"70%"}/></>
