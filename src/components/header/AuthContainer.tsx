@@ -4,16 +4,19 @@ import {useState} from "react";
 import RegisterForm from "../auth/RegisterForm.tsx";
 import ThemeSwitch from "./ThemeSwitch.tsx";
 import {useFav} from "../../context/useFav.tsx";
+import {useSeen} from "../../context/useSeen.tsx";
 
 
 const AuthContainer = () => {
     const { logout, isLogged, setOpenLoginDialog } = useAuth();
     const { clearFavorites } = useFav()
+    const { clearSeen } = useSeen()
     const [open, setOpen] = useState(false);
 
     const handleLogout = () => {
         logout()
         clearFavorites();
+        clearSeen();
     }
 
     return (

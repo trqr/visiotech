@@ -1,5 +1,5 @@
-export type Fav = {
-    id: number;
+export type FavAndSeen = {
+    media_id: number;
     type: string;
     title: string;
     vote_average: number;

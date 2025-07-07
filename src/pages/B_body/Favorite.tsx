@@ -1,15 +1,13 @@
 import {useFav} from "../../context/useFav.tsx";
-import {Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, Rating, Typography} from "@mui/material";
-import type {Movie} from "../../@types/movie";
-import {url} from "../../components/MovieItem.tsx";
+import {Box, Card, CardContent, CardMedia, Container, Grid, IconButton, Rating, Typography} from "@mui/material";
 import { useSeen } from "../../context/useSeen.tsx";
 import {Delete, EmojiEvents, EmojiEventsOutlined, Visibility, VisibilityOutlined} from "@mui/icons-material";
 import Pages from "../Pages.tsx";
-import type {Fav} from "../../@types/Fav.ts";
+import type {FavAndSeen} from "../../@types/FavAndSeen.ts";
 
 const Favorite = () => {
     // @ts-expect-error biendslecontext
-    const { favoriteFilms, addFavorite, removeFavorite, isFavorite } = useFav();
+    const { favoriteFilms, removeFavorite, isFavorite } = useFav();
     // @ts-expect-error biendslecontext
     const { seenFilms, addSeen, removeSeen, isSeen } = useSeen();
 
@@ -19,7 +17,7 @@ const Favorite = () => {
                 <h1 style={{textAlign: "center"}}>{favoriteFilms.length > 0 ? "Mes favoris" : "Vous n'avez pas de favoris"}</h1>
                 <Container maxWidth="lg">
                     <Grid container spacing={2}>
-                    {favoriteFilms.map((fav: Fav) => (
+                    {favoriteFilms.map((fav: FavAndSeen) => (
                         <Grid size={{xl: 6, lg: 6, md: 6, xs: 12}}>
                             <Card sx={{display: 'flex', minHeight: "180px", justifyContent: 'space-between'}}>
                                 <Box sx={{display: 'flex', flexDirection: 'column'}}>
@@ -32,10 +30,10 @@ const Favorite = () => {
                                     <Box sx={{display: 'flex', justifyContent: "space-between",  alignContent: 'center', pl: 1, pb: 1}}>
                                         <Box>
                                         <IconButton color={"primary"}
-                                                    onClick={() => isSeen(fav) ? removeSeen(fav) : addSeen(fav)}>
+                                                    onClick={() => isSeen(fav) ? removeSeen(fav.media_id) : addSeen(fav, fav.type, fav.user_id)}>
                                             {isSeen(fav) ? <Visibility/> : <VisibilityOutlined/>}
                                         </IconButton>
-                                        <IconButton onClick={() => removeFavorite(fav.id)}><Delete color={"primary"}/></IconButton>
+                                        <IconButton onClick={() => removeFavorite(fav.media_id)}><Delete color={"primary"}/></IconButton>
                                         </Box>
                                         <Box sx={{
                                             display: "flex",

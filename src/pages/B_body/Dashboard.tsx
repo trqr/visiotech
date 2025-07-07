@@ -25,6 +25,8 @@ import MainGridSkeleton from "../../components/common/Skeletons/DashboardGridSke
 import DashboardGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
 import {useAuth} from "../../context/useAuth.tsx";
 import {useFav} from "../../context/useFav.tsx";
+import { useSeen } from "../../context/useSeen.tsx";
+import MySnackBar from "../../components/common/MySnackBar.tsx";
 
 const Dashboard= () => {
     const theme = useTheme();
@@ -42,11 +44,15 @@ const Dashboard= () => {
     const [isPending, startTransition] = useTransition();
     const {isLogged, user} = useAuth();
     const {getFavorites} = useFav();
+    const {getSeen} = useSeen();
 
 
     useEffect(() => {
-        if (isLogged)
+        if (isLogged){
             getFavorites(user);
+            getSeen(user)
+        }
+
         startTransition( async () => {
             const movies = await fetch(`${movieApi}/now_playing?language=fr-FR&page=${page}`, apiOptions)
                 .then(res => res.json())
@@ -116,6 +122,7 @@ const Dashboard= () => {
                 {isPending && (
                     <CarouselSkeleton gap={"5px"} width={"100%"}></CarouselSkeleton>
                 )}
+                <MySnackBar></MySnackBar>
                 <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center",
                     position: "sticky", href:"#grid", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px", backgroundColor: `${theme.palette.background.default}`}}>
                     {selectedType !== "person" &&

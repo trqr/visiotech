@@ -53,7 +53,7 @@ const MovieItem= ({movie, selectedType}: MovieItemProps) => {
                 <IconButton color={"primary"} sx={{position: "absolute", top: 460, right: 50}} onClick={() => isFavorite(movie) ? removeFavorite(movie.id) : (isLogged ? addFavorite(movie, selectedType, user) : setOpenLoginDialog(true))}>
                     {isFavorite(movie) ? <Favorite/> : <FavoriteBorder/>}
                 </IconButton>
-                <IconButton color={"primary"} sx={{position: "absolute", top: 460, right: 10}} onClick={() => isSeen(movie) ? removeSeen(movie) : addSeen(movie)}>
+                <IconButton color={"primary"} sx={{position: "absolute", top: 460, right: 10}} onClick={() => isSeen(movie) ? removeSeen(movie.id) : addSeen(movie, selectedType, user)}>
                     {isSeen(movie) ? <Visibility/> : <VisibilityOutlined/>}
                 </IconButton>
                 <CardContent>

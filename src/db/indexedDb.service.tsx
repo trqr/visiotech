@@ -51,3 +51,7 @@ export const getUserByEmail = async (email: string) => {
 export const getFavByUserId = async (userId: number) => {
     return await db.fav.where('user_id').equals(userId).toArray();
 }
+
+export const getSeenByUserId = async (userId: number) => {
+    return await db.seen.where('user_id').equals(userId).toArray();
+}
