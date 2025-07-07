@@ -6,6 +6,7 @@ import type {User} from "../@types/User.ts";
 import MySnackBar from "../components/common/MySnackBar.tsx";
 
 type AuthProviderType = {
+    isLoggedIn : () => Promise<boolean>;
     isLogged: boolean;
     user: User | null;
     login: (email: string, rawPassword: string) => void;
@@ -24,8 +25,17 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [snackMessage, setSnackMessage] = useState("");
     const [snackStatus, setSnackStatus] = useState<"success" | "error" | "info" | "warning">("info");
 
-    const [token, setToken] = useState('');
-
+    const isLoggedIn = async () => {
+        const token = localStorage.getItem('token');
+        const decoded = await decodedToken()
+        if (token && (decoded.exp > Date.now() / 1000)) {
+            const user = await getUserByEmail(decoded.email);
+            setUser(user!);
+            setIsLogged(true);
+            return true;
+        }
+        return false;
+    }
 
     function base64url(source: string) {
         return btoa(source)
@@ -47,20 +57,19 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         return `${headerEncoded}.${payloadEncoded}.${signature}`;
     }
 
-    const handleGenerateToken = (username: string) => {
+    const handleGenerateToken = (username: string, email: string) => {
         const payload = {
             username: username,
-            role: 'user',
+            email: email,
             exp: Math.floor(Date.now() / 1000) + 3 * 60
         };
 
         const token = generateFakeJWT(payload);
         console.log("JWT :", token);
-        setToken(token);
         localStorage.setItem('token', token);
     };
 
-    const decodedToken: string = () => {
+    const decodedToken = () => {
         const currentToken = localStorage.getItem('token');
         const [, payloadPart] = currentToken!.split('.');
         const decoded = JSON.parse(atob(payloadPart.replace(/-/g, '+').replace(/_/g, '/')));
@@ -80,7 +89,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
        if (await bcrypt.compare(rawPassword, user.passwordHash)){
            setUser(user)
            setIsLogged(true);
-           handleGenerateToken(user.username);
+           handleGenerateToken(user.username, user.email!);
            setSnackMessage(`Welcome ${user.username} !`);
            setSnackStatus("success");
            setOpenSnack(true);
@@ -94,6 +103,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('token');
         setIsLogged(false);
         setSnackMessage(`Goodbye !`);
         setSnackStatus("info");
@@ -125,7 +135,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
     return (
         <>
-            <AuthContext.Provider value={{isLogged, user, login, logout, register, setOpenLoginDialog}}>
+            <AuthContext.Provider value={{isLoggedIn, isLogged, user, login, logout, register, setOpenLoginDialog}}>
                 {children}
                     <LoginForm open={openLoginDialog} setOpen={setOpenLoginDialog}/>
                     <MySnackBar open={openSnack} setOpen={setOpenSnack} color={snackStatus}
