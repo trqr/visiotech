@@ -1,14 +1,4 @@
-import {
-    Box,
-    Button,
-    Chip,
-    CircularProgress,
-    Grid,
-    IconButton,
-    Skeleton, Stack,
-    useColorScheme,
-    useTheme
-} from "@mui/material";
+import {Box, Button, Chip, Grid, IconButton, useTheme} from "@mui/material";
 import MovieItem from "../../components/MovieItem.tsx";
 import Pages from "../Pages.tsx";
 import {useEffect, useRef, useState, useTransition} from "react";
@@ -21,12 +11,10 @@ import movieGenres from "../../dataFake/movie_genres.json";
 import tvGenres from "../../dataFake/tv_genres.json";
 import { Clear } from "@mui/icons-material";
 import CarouselSkeleton from "../../components/common/Skeletons/CarouselSkeleton.tsx";
-import MainGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
 import DashboardGridSkeleton from "../../components/common/Skeletons/DashboardGridSkeleton.tsx";
 import {useAuth} from "../../context/useAuth.tsx";
 import {useFav} from "../../context/useFav.tsx";
 import { useSeen } from "../../context/useSeen.tsx";
-import MySnackBar from "../../components/common/MySnackBar.tsx";
 
 const Dashboard= () => {
     const theme = useTheme();
@@ -43,7 +31,9 @@ const Dashboard= () => {
     const [ selectedGenreId, setSelectedGenreId] = useState<number>();
     const [isPending, startTransition] = useTransition();
     const {isLogged, user} = useAuth();
+    // @ts-expect-error okk
     const {getFavorites} = useFav();
+    // @ts-expect-error okk
     const {getSeen} = useSeen();
 
 
@@ -119,10 +109,9 @@ const Dashboard= () => {
                 {!isPending && selectedType !== "person" && upcomingMovies && (
                 <Carousel type={selectedType} movies={selectedType === "movie" ? upcomingMovies : upcomingSeries!}></Carousel>
                 )}
-                {isPending && (
+                {isPending &&  (
                     <CarouselSkeleton gap={"5px"} width={"100%"}></CarouselSkeleton>
                 )}
-                <MySnackBar></MySnackBar>
                 <Box sx={{display: "flex", width: "80%", margin: "30px auto", justifyContent: "space-evenly", alignItems: "center",
                     position: "sticky", href:"#grid", top: "0px", zIndex: "30", borderRadius: "10px", padding: "0 5px", backgroundColor: `${theme.palette.background.default}`}}>
                     {selectedType !== "person" &&

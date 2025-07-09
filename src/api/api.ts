@@ -1,4 +1,4 @@
-import {type Dispatch, type SetStateAction, useEffect} from "react";
+import {type Dispatch, type SetStateAction} from "react";
 
 export const apiOptions = {
     method: 'GET',

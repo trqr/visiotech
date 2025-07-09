@@ -1,8 +1,13 @@
 import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 import {url} from "../MovieItem.tsx";
 import { useNavigate } from "react-router";
+import type {MovieCredit} from "../../@types/MovieCredit.ts";
 
-const MiniPeopleCard = ({actor}: any) => {
+type MiniPeopleCardProps = {
+    actor: MovieCredit;
+}
+
+const MiniPeopleCard = ({actor}: MiniPeopleCardProps) => {
     const navigate = useNavigate();
   return (
       <Card sx={{maxWidth: 200}} onClick={() => navigate(`/people/${actor.id}`)}

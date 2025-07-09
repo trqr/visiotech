@@ -1,0 +1,12 @@
+.scrollable-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollable-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(214, 126, 40, 0.2);
+    border-radius: 3px;
+}

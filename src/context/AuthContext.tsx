@@ -1,4 +1,4 @@
-import {createContext, useState, type ReactNode, type Dispatch, type SetStateAction} from "react";
+import {createContext, useState, type ReactNode, type Dispatch, type SetStateAction, useEffect} from "react";
 import LoginForm from "../components/auth/LoginForm";
 import {Add, getUserByEmail} from "../db/indexedDb.service.tsx";
 import bcrypt from "bcryptjs";
@@ -25,8 +25,15 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const [snackMessage, setSnackMessage] = useState("");
     const [snackStatus, setSnackStatus] = useState<"success" | "error" | "info" | "warning">("info");
 
+    useEffect(() => {
+        isLoggedIn();
+    }, []);
+
     const isLoggedIn = async () => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('tokenvisio');
+        if (!token) {
+            return false;
+        }
         const decoded = await decodedToken()
         if (token && (decoded.exp > Date.now() / 1000)) {
             const user = await getUserByEmail(decoded.email);
@@ -34,6 +41,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
             setIsLogged(true);
             return true;
         }
+        console.log("Temps dépassé")
         return false;
     }
 
@@ -61,16 +69,16 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         const payload = {
             username: username,
             email: email,
-            exp: Math.floor(Date.now() / 1000) + 3 * 60
+            exp: Math.floor(Date.now() / 1000) + 10 * 60
         };
 
         const token = generateFakeJWT(payload);
         console.log("JWT :", token);
-        localStorage.setItem('token', token);
+        localStorage.setItem('tokenvisio', token);
     };
 
     const decodedToken = () => {
-        const currentToken = localStorage.getItem('token');
+        const currentToken = localStorage.getItem('tokenvisio');
         const [, payloadPart] = currentToken!.split('.');
         const decoded = JSON.parse(atob(payloadPart.replace(/-/g, '+').replace(/_/g, '/')));
         console.log("Decoded payload :", decoded);
@@ -103,7 +111,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('token');
+        localStorage.removeItem('tokenvisio');
         setIsLogged(false);
         setSnackMessage(`Goodbye !`);
         setSnackStatus("info");

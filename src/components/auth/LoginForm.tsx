@@ -1,7 +1,6 @@
 import {Box, Button, Dialog, TextField} from "@mui/material";
 import {useAuth} from "../../context/useAuth.tsx";
 import { useState } from "react";
-import {useFav} from "../../context/useFav.tsx";
 
 type LoginFormProps = {
     open: boolean,
@@ -9,7 +8,7 @@ type LoginFormProps = {
 }
 
 const LoginForm= ({open, setOpen}: LoginFormProps) => {
-    const {login, user} = useAuth();
+    const {login} = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 

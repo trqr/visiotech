@@ -1,13 +1,14 @@
 import {createContext, useState} from "react";
 import type {Movie} from "../@types/movie";
 import type {User} from "../@types/User.ts";
-import type {FavAndSeen} from "../@types/FavAndSeen.ts";
+import type {Fav} from "../@types/Fav.ts";
 import {url} from "../components/MovieItem.tsx";
 import {Add, Delete, getFavByUserId} from "../db/indexedDb.service.tsx";
 import MySnackBar from "../components/common/MySnackBar.tsx";
+import type {Seen} from "../@types/Seen.ts";
 
 type SeenProviderType = {
-    seenFilms: Movie[];
+    seenFilms: Seen[];
     getSeen: (user: User) => void;
     addSeen: (movie: Movie, type: string, user: User) => void;
     removeSeen: (id: number) => void;
@@ -18,7 +19,7 @@ type SeenProviderType = {
 export const SeenContext = createContext<SeenProviderType | undefined>(undefined);
 
 export const SeenProvider = ({children}: { children: React.ReactNode }) => {
-    const [seenFilms, setSeenFilms] = useState<FavAndSeen[]>([]);
+    const [seenFilms, setSeenFilms] = useState<Seen[]>([]);
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
     const [snackStatus, setSnackStatus] = useState<"success" | "error" | "info" | "warning">("info");
@@ -30,7 +31,7 @@ export const SeenProvider = ({children}: { children: React.ReactNode }) => {
     const addSeen = async (movie: Movie, type: string, user: User) => {
         if (!isSeen(movie)) {
 
-            const seen: FavAndSeen = {
+            const seen: Seen = {
                 media_id: movie.id,
                 type: type,
                 title: movie.title ?? movie.name,
@@ -49,7 +50,7 @@ export const SeenProvider = ({children}: { children: React.ReactNode }) => {
 
     const removeSeen = (id: number) => {
         setSeenFilms(seenFilms.filter(f => f.media_id !== id))
-        Delete("seen", id)
+        Delete("seen", id);
         setSnackMessage("Removed from seen");
         setSnackStatus("info");
         setOpenSnack(true);
@@ -62,6 +63,7 @@ export const SeenProvider = ({children}: { children: React.ReactNode }) => {
     const clearSeen = () => {
         setSeenFilms([]);
     }
+
 
     return (
         <>

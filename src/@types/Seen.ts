@@ -1,4 +1,4 @@
-export type FavAndSeen = {
+export type Seen = {
     media_id: number;
     type: string;
     title: string;

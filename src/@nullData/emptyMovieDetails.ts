@@ -1,0 +1,30 @@
+import type {MovieDetails} from "../@types/MovieDetails.ts";
+
+export const emptyMovieDetails: MovieDetails = {
+    adult: false,
+    backdrop_path: null,
+    belongs_to_collection: null,
+    budget: 0,
+    genres: [],
+    homepage: "",
+    id: 0,
+    imdb_id: "",
+    origin_country: [],
+    original_language: "",
+    original_title: "",
+    overview: "",
+    popularity: 0,
+    poster_path: null,
+    production_companies: [],
+    production_countries: [],
+    release_date: "",
+    revenue: 0,
+    runtime: 0,
+    spoken_languages: [],
+    status: "",
+    tagline: "",
+    title: "",
+    video: false,
+    vote_average: 0,
+    vote_count: 0
+};

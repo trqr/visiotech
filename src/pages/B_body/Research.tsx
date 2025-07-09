@@ -38,7 +38,7 @@ const Research= () => {
                 <Button variant={"outlined"} onClick={() => setMovieOrPerson("movie")}>Films</Button>
                 <Button variant={"outlined"} onClick={() => setMovieOrPerson("person")}>Acteurs</Button>
             </Box>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{justifyContent:"center"}}>
             {MovieOrPerson === "movie" &&
             <>
                 {researchedMovies.map((movie) => (

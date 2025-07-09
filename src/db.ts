@@ -1,11 +1,12 @@
 import Dexie, {type Table} from 'dexie';
 import type {User} from "./@types/User.ts";
-import type {FavAndSeen} from "./@types/FavAndSeen.ts";
+import type {Fav} from "./@types/Fav.ts";
+import type {Seen} from "./@types/Seen.ts";
 
 export class MVDB extends Dexie {
     users!: Table<User, number>;
-    fav!: Table<FavAndSeen, number>;
-    seen!: Table<FavAndSeen, number>;
+    fav!: Table<Fav, number>;
+    seen!: Table<Seen, number>;
 
     constructor() {
         super('MVDB');

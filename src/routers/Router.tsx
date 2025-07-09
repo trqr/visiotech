@@ -24,7 +24,6 @@ const Router= () => {
                         <Route path="/movie/:id" element={<MovieDetails/>}/>
                         <Route path="/tv/:id" element={<SerieDetails/>}/>
                         <Route path="/people/:id" element={<PeopleDetails/>}/>
-                        <Route path="/register" element={<RegisterForm/>}/>
                         <Route path="/research/:search" element={<Research/>}/>
                     </Route>
                     <Route path="" element={<LayoutWithoutBar/>}>

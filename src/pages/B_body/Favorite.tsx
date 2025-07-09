@@ -3,7 +3,7 @@ import {Box, Card, CardContent, CardMedia, Container, Grid, IconButton, Rating, 
 import { useSeen } from "../../context/useSeen.tsx";
 import {Delete, EmojiEvents, EmojiEventsOutlined, Visibility, VisibilityOutlined} from "@mui/icons-material";
 import Pages from "../Pages.tsx";
-import type {FavAndSeen} from "../../@types/FavAndSeen.ts";
+import type {Fav} from "../../@types/Fav.ts";
 
 const Favorite = () => {
     // @ts-expect-error biendslecontext
@@ -17,7 +17,7 @@ const Favorite = () => {
                 <h1 style={{textAlign: "center"}}>{favoriteFilms.length > 0 ? "Mes favoris" : "Vous n'avez pas de favoris"}</h1>
                 <Container maxWidth="lg">
                     <Grid container spacing={2}>
-                    {favoriteFilms.map((fav: FavAndSeen) => (
+                    {favoriteFilms.map((fav: Fav) => (
                         <Grid size={{xl: 6, lg: 6, md: 6, xs: 12}}>
                             <Card sx={{display: 'flex', minHeight: "180px", justifyContent: 'space-between'}}>
                                 <Box sx={{display: 'flex', flexDirection: 'column'}}>

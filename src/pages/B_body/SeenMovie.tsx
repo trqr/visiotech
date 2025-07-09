@@ -1,9 +1,10 @@
 import {Box, Card, CardContent, CardMedia, Container, Grid, IconButton, Rating, Typography } from "@mui/material";
 import Pages from "../Pages";
-import type { FavAndSeen } from "../../@types/FavAndSeen";
+import type { Fav } from "../../@types/Fav.ts";
 import {Delete, EmojiEvents, EmojiEventsOutlined, Favorite, FavoriteOutlined} from "@mui/icons-material";
 import {useFav} from "../../context/useFav.tsx";
 import {useSeen} from "../../context/useSeen.tsx";
+import type {Seen} from "../../@types/Seen.ts";
 
 const SeenMovie= () => {
     // @ts-expect-error biendslecontext
@@ -17,7 +18,7 @@ const SeenMovie= () => {
                 <h1 style={{textAlign: "center"}}>{seenFilms.length > 0 ? "Mes favoris" : "Vous n'avez pas de favoris"}</h1>
                 <Container maxWidth="lg">
                     <Grid container spacing={2}>
-                        {seenFilms.map((seen: FavAndSeen) => (
+                        {seenFilms.map((seen: Seen) => (
                             <Grid size={{xl: 6, lg: 6, md: 6, xs: 12}}>
                                 <Card sx={{display: 'flex', minHeight: "180px", justifyContent: 'space-between'}}>
                                     <Box sx={{display: 'flex', flexDirection: 'column'}}>

@@ -1,14 +1,13 @@
 import {createContext, useState} from "react";
 import type {Movie} from "../@types/movie";
-import type {FavAndSeen} from "../@types/FavAndSeen.ts";
+import type {Fav} from "../@types/Fav.ts";
 import {url} from "../components/MovieItem.tsx";
-import {Add, Delete, getFavByUserId, getSeenByUserId} from "../db/indexedDb.service.tsx";
+import {Add, Delete, getSeenByUserId} from "../db/indexedDb.service.tsx";
 import type {User} from "../@types/User.ts";
-import Snackbar from "@mui/material/Snackbar";
 import MySnackBar from "../components/common/MySnackBar.tsx";
 
 type FavoriteProviderType = {
-    favoriteFilms: FavAndSeen[];
+    favoriteFilms: Fav[];
     getFavorites: (user: User) => void;
     addFavorite: (movie: Movie, type: string, user: User) => void;
     removeFavorite: (id: number) => void;
@@ -19,7 +18,7 @@ type FavoriteProviderType = {
 export const FavoriteContext = createContext<FavoriteProviderType | undefined>(undefined);
 
 export const FavoriteProvider = ({children} : { children: React.ReactNode }) => {
-    const [favoriteFilms, setFavoriteFilms] = useState<FavAndSeen[]>([]);
+    const [favoriteFilms, setFavoriteFilms] = useState<Fav[]>([]);
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
     const [snackStatus, setSnackStatus] = useState<"success" | "error" | "info" | "warning">("info");
@@ -31,7 +30,7 @@ export const FavoriteProvider = ({children} : { children: React.ReactNode }) => 
     const addFavorite = async (movie: Movie, type: string, user: User) => {
         if (!isFavorite(movie)){
 
-            const fav: FavAndSeen = {
+            const fav: Fav = {
                 media_id : movie.id,
                 type: type,
                 title: movie.title ?? movie.name,

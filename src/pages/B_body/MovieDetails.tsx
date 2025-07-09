@@ -1,21 +1,39 @@
 import { useParams } from "react-router";
-import {Box, CircularProgress, Paper, Skeleton, Typography} from "@mui/material";
+import {
+    Avatar,
+    Box,
+    Card,
+    CardContent,
+    CardHeader,
+    IconButton,
+    Paper,
+    Rating,
+    Skeleton,
+    Typography
+} from "@mui/material";
 import {useEffect, useState, useTransition} from "react";
 import {url} from "../../components/MovieItem.tsx";
 import { movieApi, apiOptions} from "../../api/api.ts";
 import MiniPeopleCard from "../../components/movieDetails/miniPeopleCard.tsx";
 import VideosCarousel from "../../components/common/VideosCarousel.tsx";
 import CarouselSkeleton from "../../components/common/Skeletons/CarouselSkeleton.tsx";
+import type {MovieDetails} from "../../@types/MovieDetails.ts";
+import {emptyMovieDetails} from "../../@nullData/emptyMovieDetails.ts";
+import type {MovieCredit} from "../../@types/MovieCredit.ts";
+import "./MovieDetails.css"
+import {numberFormat} from "../../Utils/format.ts";
+import Pages from "../Pages.tsx";
 
 
 
 const MovieDetails = () => {
     const {id} = useParams();
-    const [movieData, setMovieData] = useState([]);
+    const [movieData, setMovieData] = useState<MovieDetails>(emptyMovieDetails);
     const [images, setImages] = useState([]);
-    const [credits, setCredits] = useState([]);
+    const [credits, setCredits] = useState<MovieCredit[]>([]);
     const [videos, setVideos] = useState([]);
     const [providers, setProviders] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [isPending, startTransition] = useTransition();
 
 
@@ -29,7 +47,9 @@ const MovieDetails = () => {
                 .then(res => res.json());
             const movieVideos = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`, apiOptions)
                 .then(res => res.json());
-            const movieProviders = await fetch('https://api.themoviedb.org/3/movie/76600/watch/providers', apiOptions)
+            const movieProviders = await fetch(`https://api.themoviedb.org/3/movie/${id}/watch/providers`, apiOptions)
+                .then(res => res.json());
+            const movieReviews = await fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?language=en-US&page=1`, apiOptions)
                 .then(res => res.json());
             startTransition( () => {
                 setMovieData(movieData);
@@ -39,13 +59,15 @@ const MovieDetails = () => {
                     if (a.type === b.type) return 0;
                     return a.type === "Trailer" ? -1 : 1;
                 }));
-                setProviders(movieProviders.results.FR.rent);
+                setProviders(movieProviders?.results?.FR?.flatrate || []);
+                setReviews(movieReviews.results);
             })
         })
     }, [id]);
 
     return (
         <>
+            <Pages title={movieData.title || movieData.name} description={movieData.title}>
             <Paper sx={{width: "90%", margin: "40px auto", display: "flex", justifyContent: "flex-start", alignContent: "flex-start"}} elevation={3}>
                 <Box sx={{width: "40%", margin: "20px 20px", position: "relative", justifyContent:"flex-start"}}>
                     {isPending
@@ -61,8 +83,8 @@ const MovieDetails = () => {
                     <Box sx={{display: "flex", justifyContent: "space-between", margin: "20px 20px", alignItems:"center"}}>
                         <Box>
                             <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Status: ${movieData.status}`}</Typography>
-                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Budget: ${movieData.budget}`}</Typography>
-                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Revenus: ${movieData.revenue}`}</Typography>
+                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Budget: ${numberFormat(movieData.budget)} $`}</Typography>
+                            <Typography variant={"h5"} sx={{margin: "5px 0"}}>{isPending ? <Skeleton/> : `Revenus: ${numberFormat(movieData.revenue)} $`}</Typography>
                         </Box>
                         <Box sx={{display: "flex", width: "50%", justifyContent: "space-around", alignItems: "center", alignContent: "center", flexWrap: "wrap"}}>
                             {movieData.production_companies && movieData.production_companies.map((production) => (
@@ -79,17 +101,21 @@ const MovieDetails = () => {
                             </Box>
                         ))}
                     </Box>
-                    <Box sx={{
+                    <Box
+                        className={"scrollable-grid"}
+                        sx={{
                         display: "grid",
                         gridTemplateColumns: "repeat(3, 1fr)",
-                        gridGap: "10px",
-                        margin: "20px"
+                        gap: "10px",
+                        margin: "20px",
+                            overflowY: "auto",
+                            maxHeight: "726px",
+
                     }}>
-                        {credits.map((credit: any) => (
+                        {credits.map((credit: MovieCredit) => (
                             <MiniPeopleCard
                                 key={credit.id}
                                 actor={credit}>
-
                             </MiniPeopleCard>
                         ))}
                     </Box>
@@ -99,14 +125,15 @@ const MovieDetails = () => {
                         ? <CarouselSkeleton gap={"40px"} width={"950px"}></CarouselSkeleton>
                         : <VideosCarousel videos={videos}></VideosCarousel>
                     }
-                    <div className={"grid"} style={{
+                    <div className={"grid scrollable-grid"} style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(3, 1fr)",
                         gridTemplateRows: "gridAutoRows",
-                        gridGap: "10px",
+                        gap: "10px",
                         margin: "20px",
                         justifyContent: "center",
-                        maxHeight: "500px"
+                        maxHeight: "600px",
+                        overflowY: "auto"
                     }}>
                         {isPending ?
                             Array.from({length: 21}).map((_, i) => (
@@ -123,8 +150,40 @@ const MovieDetails = () => {
                             ))
                         }
                     </div>
+                    <Box className={"scrollable-grid"}
+                         sx={{
+                             display: "grid",
+                             gridTemplateColumns: "repeat(3, 1fr)",
+                             gridTemplateRows: "gridAutoRows",
+                             gap: "10px",
+                             margin: "20px"
+                         }}>
+                        {reviews.slice(0, 9).map((review: any) => (
+                            <Card sx={{maxWidth: 310}}>
+                                <CardHeader
+                                    avatar={
+                                        <Avatar src={url+review.author_details.avatar_path}>
+                                        </Avatar>
+                                    }
+                                    title={review.author_details.username}
+                                    subheader="September 14, 2016"
+                                />
+                                <CardContent>
+                                    <Rating name="half-rating-read" defaultValue={review.author_details.rating/2} precision={0.5} readOnly/>
+                                    <Typography variant="body2" sx={{color: 'text.secondary',
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 8,
+                                        WebkitBoxOrient: "vertical",
+                                        overflow: "hidden"}}>
+                                        {review.content}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
                 </Box>
             </Paper>
+            </Pages>
         </>
     );
 };

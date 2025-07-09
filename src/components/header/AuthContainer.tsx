@@ -5,11 +5,14 @@ import RegisterForm from "../auth/RegisterForm.tsx";
 import ThemeSwitch from "./ThemeSwitch.tsx";
 import {useFav} from "../../context/useFav.tsx";
 import {useSeen} from "../../context/useSeen.tsx";
+import AccountMenu from "./AccountMenu.tsx";
 
 
 const AuthContainer = () => {
     const { logout, isLogged, setOpenLoginDialog } = useAuth();
+    // @ts-expect-error okk
     const { clearFavorites } = useFav()
+    // @ts-expect-error okk
     const { clearSeen } = useSeen()
     const [open, setOpen] = useState(false);
 
@@ -25,14 +28,12 @@ const AuthContainer = () => {
                 {isLogged
                     ?
                     <>
-                        <ThemeSwitch></ThemeSwitch>
-                        <Button variant={"outlined"} onClick={() => handleLogout()}>Logout</Button>
+                        <AccountMenu></AccountMenu>
                     </>
                     :
                     <>
                         <Button variant={"contained"} onClick={() => setOpenLoginDialog(true)}>Login</Button>
                         <Button variant={"outlined"} onClick={() => setOpen(true)}>Register</Button>
-                        <ThemeSwitch></ThemeSwitch>
                     </>
                 }
             </Box>

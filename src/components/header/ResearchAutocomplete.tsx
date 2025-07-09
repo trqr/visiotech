@@ -47,7 +47,7 @@ const ResearchAutocomplete = () => {
                     options={options ?? []}
                     onChange={handleSelectionChange}
                     sx={{width: "40%"}}
-                    renderInput={(params) => <TextField {...params} onChange={handleSearchInput} size="small" label="Movie"/>}
+                    renderInput={(params) => <TextField {...params} onChange={handleSearchInput} size="small" label="Search"/>}
                 />
                 <Button variant={"outlined"} onClick={() => navigate(`/movie/${selectedMovieId}`)}>Go</Button>
                 <Button variant={"text"} onClick={() => navigate(`/research/${searchValue}`)}>More</Button>
